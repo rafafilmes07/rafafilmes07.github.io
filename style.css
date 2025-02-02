@@ -1,0 +1,25 @@
+body {
+    background-color: #444444;
+}
+
+#div1 {
+    background-color: #000000;
+    text-align: center;
+    float: left;
+    width: 750px;
+    height: 550px;
+    color:#ffffff
+}
+
+.textodiv1 { 
+    color:#ffffff;
+}
+
+#div2 {
+    background-color: #000000;
+    text-align: center;
+    float: right;
+    width: 750px;
+    height: 550px;
+    color:#ffffff
+}
