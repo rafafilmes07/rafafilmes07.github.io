@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Browser Data Inspector</title>
+
+<style>
+body{
+font-family: Arial;
+background:#111;
+color:white;
+padding:20px;
+}
+
+.box{
+background:#1e1e1e;
+padding:15px;
+margin:10px 0;
+border-radius:8px;
+}
+
+button{
+padding:10px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Browser Data Inspector</h1>
+<p>Este site mostra quais dados um site pode detectar do seu navegador.</p>
+
+<div class="box" id="basic"></div>
+<div class="box" id="screen"></div>
+<div class="box" id="storage"></div>
+<div class="box" id="webgl"></div>
+<div class="box" id="canvas"></div>
+<div class="box" id="ip"></div>
+
+<button onclick="saveTest()">Testar salvamento de dados</button>
+
+<script>
+
+// =========================
+// BASIC INFO
+// =========================
+
+let basic = `
+<h2>Navegador</h2>
+User Agent: ${navigator.userAgent}<br>
+Idioma: ${navigator.language}<br>
+Plataforma: ${navigator.platform}<br>
+Online: ${navigator.onLine}
+`;
+
+document.getElementById("basic").innerHTML = basic;
+
+
+// =========================
+// SCREEN INFO
+// =========================
+
+let screenInfo = `
+<h2>Tela</h2>
+Resolução: ${screen.width} x ${screen.height}<br>
+Área visível: ${window.innerWidth} x ${window.innerHeight}<br>
+Profundidade de cor: ${screen.colorDepth}<br>
+Pixel Ratio: ${window.devicePixelRatio}
+`;
+
+document.getElementById("screen").innerHTML = screenInfo;
+
+
+// =========================
+// STORAGE TEST
+// =========================
+
+function saveTest(){
+
+document.cookie = "testCookie=ativo";
+
+localStorage.setItem("testeLocal","salvo");
+
+sessionStorage.setItem("testeSession","ativo");
+
+alert("Dados salvos! Recarregue a página.");
+}
+
+let storageInfo = `
+<h2>Armazenamento</h2>
+Cookie: ${document.cookie || "nenhum"}<br>
+LocalStorage: ${localStorage.getItem("testeLocal")}<br>
+SessionStorage: ${sessionStorage.getItem("testeSession")}
+`;
+
+document.getElementById("storage").innerHTML = storageInfo;
+
+
+// =========================
+// WEBGL GPU
+// =========================
+
+function getGPU(){
+
+try{
+
+let canvas = document.createElement("canvas");
+let gl = canvas.getContext("webgl");
+
+let debug = gl.getExtension("WEBGL_debug_renderer_info");
+
+let renderer = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+let vendor = gl.getParameter(debug.UNMASKED_VENDOR_WEBGL);
+
+return vendor + " | " + renderer;
+
+}catch(e){
+
+return "Indisponível";
+
+}
+
+}
+
+document.getElementById("webgl").innerHTML =
+"<h2>GPU / WebGL</h2>" + getGPU();
+
+
+// =========================
+// CANVAS FINGERPRINT
+// =========================
+
+function canvasFingerprint(){
+
+let canvas = document.createElement("canvas");
+let ctx = canvas.getContext("2d");
+
+ctx.textBaseline="top";
+ctx.font="14px Arial";
+ctx.fillText("fingerprint_test",2,2);
+
+return canvas.toDataURL();
+
+}
+
+document.getElementById("canvas").innerHTML =
+"<h2>Canvas Fingerprint</h2>" + canvasFingerprint();
+
+
+// =========================
+// IP ADDRESS
+// =========================
+
+fetch("https://api.ipify.org?format=json")
+.then(res => res.json())
+.then(data=>{
+document.getElementById("ip").innerHTML =
+"<h2>IP Público</h2>" + data.ip;
+});
+
+
+// =========================
+// PAGE TIME TRACKING
+// =========================
+
+let startTime = Date.now();
+
+window.addEventListener("beforeunload",()=>{
+
+let tempo = Math.floor((Date.now()-startTime)/1000);
+
+localStorage.setItem("tempo_na_pagina",tempo);
+
+});
+
+</script>
+
+</body>
+</html>
